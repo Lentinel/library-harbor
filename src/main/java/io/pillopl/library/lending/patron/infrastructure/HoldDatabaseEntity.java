@@ -32,4 +32,8 @@ class HoldDatabaseEntity {
                 this.libraryBranchId.equals(libraryBranchId);
     }
 
+    void extendTo(Instant till) {
+        this.till = till;
+    }
+
 }

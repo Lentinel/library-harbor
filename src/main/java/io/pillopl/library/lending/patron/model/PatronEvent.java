@@ -224,6 +224,16 @@ public interface PatronEvent extends DomainEvent {
     }
 
     @Value
+    class BookHoldExtended implements PatronEvent {
+        @NonNull UUID eventId = UUID.randomUUID();
+        @NonNull Instant when;
+        @NonNull UUID patronId;
+        @NonNull UUID bookId;
+        @NonNull UUID libraryBranchId;
+        @NonNull Instant holdTill;
+    }
+
+    @Value
     class OverdueCheckoutRegistered implements PatronEvent {
         @NonNull UUID eventId = UUID.randomUUID();
         @NonNull Instant when;

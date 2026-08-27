@@ -43,6 +43,13 @@ public class PatronEventsHandler {
     }
 
     @EventListener
+    void handle(BookHoldExtended holdExtended) {
+        bookRepository.findBy(new BookId(holdExtended.getBookId()))
+                .map(book -> handleBookHoldExtended(book, holdExtended))
+                .map(this::saveBook);
+    }
+
+    @EventListener
     void handle(BookHoldCanceled holdCanceled) {
         bookRepository.findBy(new BookId(holdCanceled.getBookId()))
                 .map(book -> handleBookHoldCanceled(book,  holdCanceled))
@@ -71,7 +78,7 @@ public class PatronEventsHandler {
         }
         domainEvents.publish(
                 new BookDuplicateHoldFound(
-                        Instant.now(),
+                        bookPlacedOnHold.getWhen(),
                         onHold.getByPatron().getPatronId(),
                         bookPlacedOnHold.getPatronId(),
                         bookPlacedOnHold.getLibraryBranchId(),
@@ -83,6 +90,13 @@ public class PatronEventsHandler {
     private Book handleBookHoldExpired(Book book, BookHoldExpired holdExpired) {
         return API.Match(book).of(
                 Case($(instanceOf(BookOnHold.class)), onHold -> onHold.handle(holdExpired)),
+                Case($(), () -> book)
+        );
+    }
+
+    private Book handleBookHoldExtended(Book book, BookHoldExtended holdExtended) {
+        return API.Match(book).of(
+                Case($(instanceOf(BookOnHold.class)), onHold -> onHold.handle(holdExtended)),
                 Case($(), () -> book)
         );
     }

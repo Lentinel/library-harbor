@@ -10,6 +10,7 @@ import io.pillopl.library.lending.patron.application.hold.FindAvailableBook;
 import io.pillopl.library.lending.patron.application.hold.FindBookOnHold;
 import io.pillopl.library.lending.patron.application.hold.HandleDuplicateHold;
 import io.pillopl.library.lending.patron.application.hold.PlacingOnHold;
+import io.pillopl.library.lending.patron.application.hold.RenewingHold;
 import io.pillopl.library.lending.patron.model.PatronFactory;
 import io.pillopl.library.lending.patron.model.Patrons;
 import org.springframework.context.annotation.Bean;
@@ -48,6 +49,11 @@ public class PatronConfiguration {
     @Bean
     PlacingOnHold placingOnHold(FindAvailableBook findAvailableBook, Patrons patronRepository) {
         return new PlacingOnHold(findAvailableBook, patronRepository);
+    }
+
+    @Bean
+    RenewingHold renewingHold(FindBookOnHold findBookOnHold, Patrons patronRepository) {
+        return new RenewingHold(findBookOnHold, patronRepository);
     }
 
     @Bean

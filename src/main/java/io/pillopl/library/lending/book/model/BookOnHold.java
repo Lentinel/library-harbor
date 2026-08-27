@@ -7,6 +7,7 @@ import io.pillopl.library.lending.librarybranch.model.LibraryBranchId;
 import io.pillopl.library.lending.patron.model.PatronEvent.BookCheckedOut;
 import io.pillopl.library.lending.patron.model.PatronEvent.BookHoldCanceled;
 import io.pillopl.library.lending.patron.model.PatronEvent.BookHoldExpired;
+import io.pillopl.library.lending.patron.model.PatronEvent.BookHoldExtended;
 import io.pillopl.library.lending.patron.model.PatronEvent.BookReturned;
 import io.pillopl.library.lending.patron.model.PatronId;
 import lombok.AccessLevel;
@@ -51,6 +52,15 @@ public class BookOnHold implements Book {
         return new AvailableBook(
                 bookInformation,
                 new LibraryBranchId(bookHoldExpired.getLibraryBranchId()),
+                version);
+    }
+
+    public BookOnHold handle(BookHoldExtended bookHoldExtended) {
+        return new BookOnHold(
+                bookInformation,
+                holdPlacedAt,
+                byPatron,
+                bookHoldExtended.getHoldTill(),
                 version);
     }
 

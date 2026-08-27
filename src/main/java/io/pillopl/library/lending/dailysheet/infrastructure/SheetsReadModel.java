@@ -10,6 +10,7 @@ import io.pillopl.library.lending.librarybranch.model.LibraryBranchId;
 import io.pillopl.library.lending.patron.model.PatronEvent.BookCheckedOut;
 import io.pillopl.library.lending.patron.model.PatronEvent.BookHoldCanceled;
 import io.pillopl.library.lending.patron.model.PatronEvent.BookHoldExpired;
+import io.pillopl.library.lending.patron.model.PatronEvent.BookHoldExtended;
 import io.pillopl.library.lending.patron.model.PatronEvent.BookPlacedOnHold;
 import io.pillopl.library.lending.patron.model.PatronEvent.BookReturned;
 import io.pillopl.library.lending.patron.model.PatronId;
@@ -125,6 +126,16 @@ class SheetsReadModel implements DailySheet {
                 from(event.getWhen()),
                 event.getBookId(),
                 event.getPatronId());
+    }
+
+    @Override
+    @EventListener
+    public void handle(BookHoldExtended event) {
+        sheets.update("UPDATE holds_sheet SET hold_till = ? WHERE status = 'ACTIVE' AND book_id = ? AND hold_by_patron_id = ? AND hold_at_branch = ?",
+                from(event.getHoldTill()),
+                event.getBookId(),
+                event.getPatronId(),
+                event.getLibraryBranchId());
     }
 
     @Override

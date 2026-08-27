@@ -42,6 +42,7 @@ class PatronDatabaseEntity {
                 Case($(instanceOf(BookCheckedOut.class)), this::handle),
                 Case($(instanceOf(BookHoldCanceled.class)), this::handle),
                 Case($(instanceOf(BookHoldExpired.class)), this::handle),
+                Case($(instanceOf(BookHoldExtended.class)), this::handle),
                 Case($(instanceOf(OverdueCheckoutRegistered.class)), this::handle),
                 Case($(instanceOf(BookReturned.class)), this::handle)
 
@@ -69,6 +70,14 @@ class PatronDatabaseEntity {
 
     private PatronDatabaseEntity handle(BookHoldExpired event) {
         return removeHoldIfPresent(event.getPatronId(), event.getBookId(), event.getLibraryBranchId());
+    }
+
+    private PatronDatabaseEntity handle(BookHoldExtended event) {
+        booksOnHold.stream()
+                .filter(entity -> entity.is(event.getPatronId(), event.getBookId(), event.getLibraryBranchId()))
+                .findAny()
+                .ifPresent(entity -> entity.extendTo(event.getHoldTill()));
+        return this;
     }
 
     private PatronDatabaseEntity handle(OverdueCheckoutRegistered event) {
