@@ -28,15 +28,6 @@ public interface PatronEvent extends DomainEvent {
         return List.of(this);
     }
 
-    /**
-     * Identifies the business occurrence represented by this event.
-     * Composite events may have their own envelope id, but must expose the
-     * identity of the contained domain occurrence to lifecycle-aware consumers.
-     */
-    default UUID lifecycleEventId() {
-        return getEventId();
-    }
-
     @Value
     class PatronCreated implements PatronEvent {
         @NonNull UUID eventId = UUID.randomUUID();
@@ -82,11 +73,6 @@ public interface PatronEvent extends DomainEvent {
         @Override
         public Instant getWhen() {
             return bookPlacedOnHold.when;
-        }
-
-        @Override
-        public UUID lifecycleEventId() {
-            return bookPlacedOnHold.getEventId();
         }
 
         public static BookPlacedOnHoldEvents events(BookPlacedOnHold bookPlacedOnHold) {
